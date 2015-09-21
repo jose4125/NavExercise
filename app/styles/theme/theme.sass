@@ -1,0 +1,35 @@
+@import '../vars'
+
+[class^="icon-"], [class*=" icon-"]
+  font-family: 'icomoon'
+  speak: none
+  font-style: normal
+  font-weight: normal
+  font-variant: normal
+  text-transform: none
+  line-height: 1
+
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+
+.icon-expand_more:before
+  content: "\e20b"
+
+.icon-chevron-down:before
+  content: "\f078"
+
+.text--center
+  text-align:  center
+
+.text--justify
+  text-align: justify
+
+.show--mobile
+  display: inline-block
+  @media screen and(min-width: $lg)
+    display: none
+
+.hide--mobile
+  display: none
+  @media screen and(min-width: $lg)
+    display: inline-block

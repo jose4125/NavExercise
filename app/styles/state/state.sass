@@ -1,0 +1,42 @@
+@import '../modules/nav'
+@import '../vars'
+.is-expanded
+  &.mask
+    display: block
+  &.header
+    .header_logo
+      left: 0
+      transition: left 0.3s linear
+
+    .hamburger
+      transform: translateX(calc(100% - 70px))
+      transition: all 0.3s linear
+      width: 100%
+
+    .hamburger_body
+      opacity: 0
+      visibility: hidden
+      transition: visibility 0s 0.3s, opacity 0.3s linear
+    .header_close
+      opacity: 1
+      visibility: visible
+      transition: opacity 0.3s linear
+  &.nav
+    visibility: visible
+    left: 0
+    transition: visible 0s, left 0.2s linear
+
+  &.nav_items
+    .icon-expand_more
+      transform: rotate(180deg)
+      transition: transform 0.2s linear
+
+  & > .nav_links
+    @extend .nav_links:hover
+
+  & > .nav_sublevel
+    display: block
+  &.main
+    .content, .cover
+      transform: translateX(248px)
+      transition: all 0.2s linear

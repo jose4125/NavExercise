@@ -1,0 +1,95 @@
+@import '../vars'
+.nav
+  padding: 12px 0 0 0
+  font-size: 0
+  background: $huge-white
+  width: 248px
+  position: absolute
+  top: 60px
+  left: -250px
+  bottom: 0
+  //right: 0
+  z-index: 2
+  visibility: hidden
+  transition: visibility 0s 0.1s, left 0.2s linear
+
+  &_sections
+    list-style: none
+    padding: 0
+  &_items
+    font-size: 1.3125rem
+
+  &_links
+    display: inline-block
+    text-decoration: none !important
+    font-family: 'avant-garde'
+    background: $huge-white
+    color: $huge-black
+    line-height: 48px
+    width: 82%
+    padding: 0 20px 0 24px
+    position: relative
+    cursor: pointer
+
+    &:hover
+      background: $huge-gray
+      color: $huge-magenta
+
+  &_sublevel
+    display: none
+    &_links
+      @extend .nav_links
+      font-family: 'galaxie-copernicus'
+
+      &:hover
+        color: $huge-magenta
+
+  .icon-expand_more
+    color: $huge-magenta
+    font-size: 2rem
+    position: absolute
+    right: 5px
+    top: 50%
+    margin-top: -16px
+    transition: transform 0.2s linear
+
+  @media screen and(min-width: $lg)
+    background: $huge-magenta
+    width: 91%
+    top: 0
+    bottom: auto
+    left: 132px
+    padding: 0
+    visibility: visible
+    transition: left 0s
+    &_items
+      display: inline-block
+      font-size: 1.3125rem
+      position: relative
+
+    &_links
+      padding: 0 24px
+      line-height: 72px
+      background: $huge-magenta
+      color: $huge-white
+      width: auto
+
+      &:hover
+        background: $huge-white
+        color: $huge-magenta
+
+    &_sublevel
+      position: absolute
+      list-style: none
+      padding-top: 12px
+      background: $huge-white
+
+      &_links
+        background: $huge-white
+        color: $huge-black
+        white-space: nowrap;
+        display: block
+        line-height: 48px
+
+        &:hover
+          background: $huge-gray

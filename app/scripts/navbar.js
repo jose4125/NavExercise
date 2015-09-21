@@ -1,0 +1,278 @@
+'use strict';
+var app = app || {};
+app = (function(app) {
+  /**
+   * Navbar class
+   * @param {Object} config [description]
+   */
+  var Navbar = function(config) {
+    Object.defineProperties(this, {
+      url: {
+        value: config.url
+      },
+      parent: {
+        value: config.parent
+      },
+      element: {
+        value: config.element || 'ul'
+      }
+    });
+
+    this.fetch(config);
+  };
+
+  var element = {};
+
+  /**
+   * generate the sublevel item markup
+   * @param  {Object}
+   * @return {String}
+   */
+  var _getSubLevelListItm = function(item) {
+    return '<li class="nav_sublevel_items" role="listitem"><a href="' + item.url + '" class="nav_sublevel_links" target="_blank">' + item.label + '</a></li>';
+  };
+
+  /**
+   * get the sublevel list items and generate whole the sub list markup and return it
+   * @param  {Object} subLevelItems
+   * @return {String}
+   */
+  var _getSubLevelHtml = function(subLevelItems) {
+    var html = [
+      '<ul class="nav_sublevel" role="list">'
+    ];
+    for (var subItems in subLevelItems) {
+      var navSubItems = subLevelItems[subItems];
+      html.push(_getSubLevelListItm(navSubItems));
+    }
+    html.push('</ul>');
+    html = html.join('');
+    return html;
+  };
+
+  /**
+   * get the sublevel markup and generate whole the navBar markup and return it
+   * @param  {Object} firstLevelItems
+   * @return {String}
+   */
+  var _getFirstLevelHtml = function(firstLevelItems) {
+    var eventClass = (firstLevelItems.items.length) ? ' has--sublevel' : '';
+    var hasSublevel = (firstLevelItems.items.length) ? '<span class="icon-expand_more show--mobile"></span>' : '';
+    var aria = (firstLevelItems.items.length) ? 'role="button" aria-haspopup="true" aria-expanded="false"' : '';
+    var html = [
+      '<li class="nav_items">',
+      '<a href="' + firstLevelItems.url + '" class="nav_links' + eventClass + '"' + aria + ' target="_blank">' + firstLevelItems.label,
+      hasSublevel,
+      '</a>'
+    ];
+
+    if (firstLevelItems.items.length) {
+      html.push(_getSubLevelHtml(firstLevelItems.items));
+    }
+    html.push('</li>');
+    html = html.join('');
+    return html;
+  };
+
+  /**
+   * remove all the expanded classes
+   * the expanded class name is in the app.config
+   * @param  {Array} elements
+   */
+  var _cleanIsExpandedClasses = function(elements) {
+    elements.forEach(function(item) {
+      if (_containClass(item.parentNode)) {
+        _changeAriaAttr(item);
+        _removeElementClass([item.parentNode]);
+      }
+    });
+  };
+
+  /**
+   * return the DOM element or elements
+   * @param  {String} element
+   * @return {Object}
+   */
+  var _getElement = function(element) {
+    return document.getElementsByClassName(element);
+  };
+
+  /**
+   * add the expanded class to the elements
+   * the expanded class name is in the app.config
+   * @param {Array} els
+   */
+  var _addElementClass = function(els) {
+    els.forEach(function(el) {
+      el.classList.add(app.config.isExpanded);
+    });
+  };
+
+  /**
+   * remove the expanded class to the elements
+   * the expanded class name is in the app.config
+   * @param {Array} els
+   */
+  var _removeElementClass = function(els) {
+    els.forEach(function(el) {
+      el.classList.remove(app.config.isExpanded);
+    });
+  };
+
+  /**
+   * check if the element have the expanded class
+   * the expanded class name is in the app.config
+   * @param {Oobject} els
+   * @return {Boolean}
+   */
+  var _containClass = function(el) {
+    return el.classList.contains(app.config.isExpanded);
+  };
+
+  /**
+   * change the aria-expanded attribute value
+   * @param  {Object} el
+   */
+  var _changeAriaAttr = function(el) {
+    var value = (el.getAttribute('aria-expanded') === 'false') ? 'true' : 'false';
+    el.setAttribute('aria-expanded', value);
+  };
+
+  /**
+   * show the mask and the sublevel when you click in any navbar item
+   * removing or adding the expanded class
+   * @param  {Array} elements
+   */
+  var _navEvents = function(elements) {
+    event.preventDefault();
+    var parent = event.target.parentNode;
+
+    if (!_containClass(parent)) {
+      _cleanIsExpandedClasses(elements);
+      _addElementClass([element.elMask, parent]);
+      _changeAriaAttr(event.target);
+    }else {
+      if (window.innerWidth > 768) {
+        _removeElementClass([element.elMask]);
+      }
+      _removeElementClass([parent]);
+      _changeAriaAttr(event.target);
+    }
+  };
+
+  /**
+   * change the toggle icon to the close icon, show the left navbar and the mask
+   * change the close icon to the toggle icon, hide the left navbar and the mask
+   * removing or adding the expanded class
+   */
+  var _hamEvent = function() {
+    event.preventDefault();
+    // var elNav = _getElement(app.config.nav);
+    // var elHeader = _getElement(app.config.header);
+    // var elMask = _getElement(app.config.mask);
+    // var elHam = _getElement(app.config.toggleSlide);
+
+    if (!_containClass(element.elNav)) {
+      _addElementClass([element.elNav, element.elHeader, element.elMask, element.elMain]);
+    }else {
+      _removeElementClass([element.elNav, element.elHeader, element.elMask, element.elMain]);
+    }
+    _changeAriaAttr(element.elHam);
+  };
+
+  /**
+   * close the opened sublevel, hide the left navbar
+   * change the close icon to the toggle icon
+   * removing all the expanded classes
+   * @param  {Array} elements [description]
+   */
+  var _maskEvent = function(elements) {
+    _removeElementClass([event.target]);
+    _cleanIsExpandedClasses(elements);
+    if (window.innerWidth < 768) {
+      // var elNav = _getElement(app.config.nav);
+      // var elHeader = _getElement(app.config.header);
+      // var elHam = _getElement(app.config.toggleSlide);
+      _removeElementClass([element.elNav, element.elHeader, element.elMain, event.target]);
+      _changeAriaAttr(element.elHam);
+    }
+  };
+
+  /**
+   * handle the event to the differents DOM elements
+   */
+  var _handleEvents = function() {
+    var elements = _getElement(app.config.subLevel);
+    element.elHam = _getElement(app.config.toggleSlide)[0];
+    element.elMask = _getElement(app.config.mask)[0];
+    element.elHeader = _getElement(app.config.header)[0];
+    element.elNav = _getElement(app.config.nav)[0];
+    element.elMain = _getElement(app.config.main)[0];
+
+    elements = [].slice.call(elements);
+    elements.forEach(function(item) {
+      item.addEventListener('click', _navEvents.bind(this, elements));
+    });
+    element.elHam.addEventListener('click', _hamEvent.bind(this));
+    element.elMask.addEventListener('click', _maskEvent.bind(this, elements));
+  };
+
+  /**
+   * Navbar method to handle the Ajax call with a callback wating the server response
+   * the config object should be set in the navBar initialization -> app.js
+   * @param  {Object} config
+   *
+   * Navbar method to generate the markup with the data when the server respond
+   * and create the DOM element and append to the parent element
+   * the parent element  should be set in the config object -> app.js
+   * @param  {Array}  navbarData
+   */
+  Object.defineProperties(Navbar.prototype, {
+    fetch: {
+      value: function(config) {
+        var self = this;
+        var data = app.fetch(config, function(data) {
+          self.navBarHtml(JSON.parse(data));
+        }/*.bind(this)*/); // I can't use bind because all my tests breaks, therfore I have to use a self variable, I'm not so strong in tests
+      }
+    },
+    navBarHtml: {
+      value: function(navbarData) {
+        var html = [];
+        for (var items in navbarData.items) {
+          var navItems = navbarData.items[items];
+          html.push(_getFirstLevelHtml(navItems));
+        }
+        html = html.join('');
+        var mydiv = document.getElementById(this.parent);
+        var mycontent = document.createElement(this.element);
+        mycontent.className = app.config.navClass;
+        mycontent.innerHTML = html;
+        mydiv.appendChild(mycontent);
+        _handleEvents();
+      }
+    }
+  });
+
+  /**
+   * Method to initialize the Navbar
+   * check if all the required parameters exist and if it is a string
+   * the config object should be set in the navBar initialization -> app.js
+   * @param  {Object} config [description]
+   * @return {Object}
+   */
+  app.createNav = function(config) {
+    if (config.hasOwnProperty('url') &&
+      typeof config.url === 'string' &&
+      config.hasOwnProperty('parent') &&
+      typeof config.parent === 'string' &&
+      config.hasOwnProperty('method') &&
+      typeof config.method === 'string') {
+      return new Navbar(config);
+    }
+    var err = new ReferenceError('need url, parent and method keys or shoudl be strings');
+    throw err;
+  };
+
+  return app;
+}(app));

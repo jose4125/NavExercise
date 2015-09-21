@@ -1,0 +1,49 @@
+{
+  "name": "NavExercise",
+  "description": "Exercise for candidates to complete where they will build a responsive nav driven from json",
+  "version": "0.1.0",
+  "authors": [
+    "Jason Divock <jdivock@hugeinc.com>",
+    "Dave Furfero <dfurfero@hugeinc.com>",
+    "Wes Hatch <whatch@hugeinc.com>",
+    "Karl Stanton <kstanton@hugeinc.com>"
+  ],
+  "license": "© 2014 Huge. All Rights Reserved.",
+  "homepage": "https://github.com/hugeinc/NavExercise",
+  "bugs": {
+    "url": "https://github.com/hugeinc/NavExercise/issues"
+  },
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "express": "~4.2.0",
+    "morgan": "~1.0.0"
+  },
+  "devDependencies": {
+    "chai": "^3.2.0",
+    "del": "^2.0.2",
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-csso": "^1.0.0",
+    "gulp-karma": "0.0.4",
+    "gulp-load-plugins": "^1.0.0-rc.1",
+    "gulp-mocha": "^2.1.3",
+    "gulp-sass": "^2.0.4",
+    "gulp-uglify": "^1.4.1",
+    "karma": "~0.12.31",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-mocha": "^0.2.0",
+    "karma-mocha-reporter": "^1.1.1",
+    "karma-phantomjs-launcher": "^0.2.1",
+    "karma-sinon": "^1.0.4",
+    "karma-spec-reporter": "0.0.20",
+    "mocha": "^2.3.2",
+    "phantomjs": "^1.9.18",
+    "require-dir": "^0.3.0",
+    "sinon": "^1.16.1"
+  }
+}
