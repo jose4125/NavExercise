@@ -26,10 +26,10 @@ app = (function(app) {
   var Button = function(buttonData) {
     Object.defineProperties(this, {
       url: {
-        value: buttonData.url || ''
+        value: (buttonData) ? buttonData.url : ''
       },
       label: {
-        value: buttonData.label || ''
+        value: (buttonData) ? buttonData.label : ''
       }
     });
   };
@@ -195,21 +195,13 @@ app = (function(app) {
      */
     handleEvents: {
       value: function() {
-        var elements = _getElement(app.config.subLevel);
-        element.elHam = _getElement(app.config.toggleSlide)[0];
-        element.elMask = _getElement(app.config.mask)[0];
-        element.elHeader = _getElement(app.config.header)[0];
-        element.elNav = _getElement(app.config.nav)[0];
-        element.elMain = _getElement(app.config.main)[0];
+        element.elements = _getElement(app.config.subLevel);
 
-        elements = [].slice.call(elements);
+        element.elements = [].slice.call(element.elements);
         var self = this;
-        elements.forEach(function(item) {
-          item.addEventListener('click', self.navEvents.bind(self, elements));
+        element.elements.forEach(function(item) {
+          item.addEventListener('click', self.navEvents.bind(self, element.elements));
         });
-        element.elHam.addEventListener('click', _hamEvent.bind(this));
-        element.elMask.addEventListener('click',
-          _maskEvent.bind(this, elements));
       }
     }
   });
@@ -241,6 +233,9 @@ app = (function(app) {
     return document.getElementsByClassName(element);
   };
 
+  var hamButton = new Button();
+  var maskButton = new Button();
+
   /**
    * change the toggle icon to the close icon, show the left navbar and the mask
    * change the close icon to the toggle icon, hide the left navbar and the mask
@@ -248,27 +243,23 @@ app = (function(app) {
    */
   var _hamEvent = function() {
     event.preventDefault();
-    // var elNav = _getElement(app.config.nav);
-    // var elHeader = _getElement(app.config.header);
-    // var elMask = _getElement(app.config.mask);
-    // var elHam = _getElement(app.config.toggleSlide);
 
-    if (!NavButton.prototype.containClass.call(this, (element.elNav))) {
-      NavButton.prototype.addElementClass.call(this, ([
+    if (!hamButton.containClass.call(this, (element.elNav))) {
+      hamButton.addElementClass.call(this, ([
         element.elNav,
         element.elHeader,
         element.elMask,
         element.elMain
       ]));
     }else {
-      NavButton.prototype.removeElementClass.call(this, ([
+      hamButton.removeElementClass.call(this, ([
         element.elNav,
         element.elHeader,
         element.elMask,
         element.elMain
       ]));
     }
-    NavButton.prototype.changeAriaAttr.call(this, (element.elHam));
+    hamButton.changeAriaAttr.call(this, (element.elHam));
   };
 
   /**
@@ -278,17 +269,32 @@ app = (function(app) {
    * @param  {Array} elements [description]
    */
   var _maskEvent = function(elements) {
-    NavButton.prototype.removeElementClass.call(this, ([event.target]));
-    NavButton.prototype.cleanIsExpandedClasses.call(this, (elements));
+    maskButton.removeElementClass([event.target]);
+    maskButton.cleanIsExpandedClasses(elements);
     if (window.innerWidth < 768) {
-      NavButton.prototype.removeElementClass.call(this, ([
+      maskButton.removeElementClass([
         element.elNav,
         element.elHeader,
         element.elMain,
         event.target
-      ]));
-      NavButton.prototype.changeAriaAttr.call(this, (element.elHam));
+      ]);
+      maskButton.changeAriaAttr(element.elHam);
     }
+  };
+
+  /**
+   * handle the event to the differents DOM elements
+   */
+  var _handleEvents = function() {
+    element.elHam = _getElement(app.config.toggleSlide)[0];
+    element.elMask = _getElement(app.config.mask)[0];
+    element.elHeader = _getElement(app.config.header)[0];
+    element.elNav = _getElement(app.config.nav)[0];
+    element.elMain = _getElement(app.config.main)[0];
+
+    element.elHam.addEventListener('click', _hamEvent.bind(this));
+    element.elMask.addEventListener('click',
+      _maskEvent.bind(this, element.elements));
   };
 
   /**
@@ -305,9 +311,16 @@ app = (function(app) {
     fetch: {
       value: function(config) {
         var self = this;
-        var data = app.fetch(config, function(data) {
-          self.navBarHtml(JSON.parse(data));
-        }/*.bind(this)*/); // I can't use bind because all my tests breaks, therfore I have to use a self variable, I'm not so strong in tests
+        var data = app.fetch(config)
+          .then(function(data) {
+            self.navBarHtml(JSON.parse(data));
+          });
+        //var data = app.fetch(config, function(data) {
+        //  self.navBarHtml(JSON.parse(data));
+        //}/*.bind(this)*/);
+
+
+        // I can't use bind because all my tests breaks, therfore I have to use a self variable, I'm not so strong in tests
       }
     },
     navBarHtml: {
@@ -326,6 +339,7 @@ app = (function(app) {
         mycontent.innerHTML = html;
         mydiv.appendChild(mycontent);
         navItems.handleEvents();
+        _handleEvents();
       }
     }
   });
