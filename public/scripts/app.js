@@ -111,6 +111,86 @@ app = (function(app) {
 
   var element = {};
 
+  var Button = function(buttonData) {
+    Object.defineProperties(this, {
+      url: {
+        value: buttonData.url || ''
+      },
+      label: {
+        value: buttonData.label || ''
+      }
+    });
+  };
+
+  Object.defineProperties(Button.prototype, {
+    getFirstLevelHtml: {
+      value: function(firstLevelItems) {
+        var eventClass = (this.length) ? ' has--sublevel' : '';
+
+        var hasSublevel = (this.length) ?
+          '<span class="icon-expand_more show--mobile"></span>' : '';
+
+        var aria = (this.length) ?
+          'role="button" aria-haspopup="true" aria-expanded="false"' : '';
+
+        var html = [
+          '<li class="nav_items">',
+          '<a href="' + this.url + '" class="nav_links' + eventClass + '"' +
+          aria + ' target="_blank">' + this.label,
+          hasSublevel,
+          '</a>'
+        ];
+
+        if (this.length) {
+          html.push(this.getSubLevelHtml(this.subLevel));
+        }
+        html.push('</li>');
+        html = html.join('');
+        return html;
+      }
+    },
+    getSubLevelHtml: {
+      value: function(subLevelItems) {
+        var html = [
+          '<ul class="nav_sublevel" role="list">'
+        ];
+        for (var subItems in subLevelItems) {
+          // var navSubItems = subLevelItems[subItems];
+          var navSubItems = new SubButton(subLevelItems[subItems]);
+          html.push(navSubItems.getSubLevelListItm());
+        }
+        html.push('</ul>');
+        html = html.join('');
+        return html;
+      }
+    },
+    getSubLevelListItm: {
+      value: function() {
+        return '<li class="nav_sublevel_items" role="listitem"><a href="' +
+        this.url + '" class="nav_sublevel_links" target="_blank">' +
+        this.label + '</a></li>';
+      }
+    }
+  });
+
+  var NavButton = function(buttonData) {
+    Button.call(this, buttonData);
+    Object.defineProperties(this, {
+      length: {
+        value: buttonData.items.length
+      },
+      subLevel: {
+        value: buttonData.items
+      }
+    });
+  };
+  NavButton.prototype = Object.create(Button.prototype);
+
+  var SubButton = function(buttonData) {
+    Button.call(this, buttonData);
+  };
+  SubButton.prototype = Object.create(Button.prototype);
+
   /**
    * generate the sublevel item markup
    * @param  {Object}
@@ -328,8 +408,9 @@ app = (function(app) {
       value: function(navbarData) {
         var html = [];
         for (var items in navbarData.items) {
-          var navItems = navbarData.items[items];
-          html.push(_getFirstLevelHtml(navItems));
+          // var navItems = navbarData.items[items];
+          var navItems = new NavButton(navbarData.items[items]);
+          html.push(navItems.getFirstLevelHtml(navItems));
         }
         html = html.join('');
         var mydiv = document.getElementById(this.parent);
